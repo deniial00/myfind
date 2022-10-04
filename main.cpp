@@ -38,7 +38,7 @@ void findFileInDir(std::string searchPath, std::string searchTerm, bool caseInse
         // check if searchterm matches current element in folder. 
         // also call function str_tolower if the option case inse
         if(searchTerm.compare(caseInsensitive ? str_tolower(fileName) : fileName) == 0){
-            printf("[%d]: %s: %s\n",getpid(), searchTerm.c_str(),searchPath.c_str());
+            printf("[%d]: %s: %s\n",getpid(), searchTerm.c_str(),realpath(searchPath.c_str(),0));
             return;
         }
 
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
     int c, optionCount = 1;
     bool optionIsRecursive = false, optionIsCaseInsensitive = false;
 
-    // check if options were given
+    // check if any options were given
     while((c = getopt(argc, argv, "Ri")) != EOF) {
         switch(c) {
             case 'i': 
@@ -127,31 +127,32 @@ int main(int argc, char* argv[])
             return EXIT_FAILURE;
             case 0:
                 // CHILD PROCESS
+
+                // start find for i search term
                 findFileInDir(searchPath,searchTerm,optionIsCaseInsensitive,optionIsRecursive);
                 
+                sleep(3);
+
                 // kill child process 
                 return EXIT_SUCCESS;
             break;
             default:
                 // PARENT PROCESS
-
-                // prevent zombie processes
-                pid_t childpid;
-                while((childpid = waitpid(-1,NULL,WNOHANG))){
-                    if((childpid == -1) && (errno != EINTR)){
-                        break;
-                    }
-                }
-
-                // wait for all processes
-                int returnStatus;       
-                waitpid(-1, &returnStatus, 0);
-
-
                 
             break;
         }
     }   
+    // prevent zombie processes
+    pid_t childpid;
+    while((childpid = waitpid(-1,NULL,WNOHANG))){
+        if((childpid == -1) && (errno != EINTR)){
+            break;
+        }
+    }
+
+    // wait for all processes
+    int returnStatus;       
+    waitpid(-1, &returnStatus, 0);
 
     return EXIT_SUCCESS;
 }
