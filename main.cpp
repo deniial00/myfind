@@ -130,8 +130,6 @@ int main(int argc, char* argv[])
 
                 // start find for i search term
                 findFileInDir(searchPath,searchTerm,optionIsCaseInsensitive,optionIsRecursive);
-                
-                sleep(3);
 
                 // kill child process 
                 return EXIT_SUCCESS;
