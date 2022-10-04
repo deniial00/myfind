@@ -36,7 +36,7 @@ void findFileInDir(std::string searchPath, std::string searchTerm, bool caseInse
             continue;
 
         // check if searchterm matches current element in folder. 
-        // also call function str_tolower if the option case inse
+        // also call function str_tolower if the option case insensitive is turned on
         if(searchTerm.compare(caseInsensitive ? str_tolower(fileName) : fileName) == 0){
             printf("[%d]: %s: %s\n",getpid(), searchTerm.c_str(),realpath(searchPath.c_str(),0));
             return;
@@ -87,12 +87,12 @@ int main(int argc, char* argv[])
             case 'i': 
                 optionCount++;
                 optionIsCaseInsensitive = true;
-                std::cout << "i enabled" << std::endl;
+                std::cout << "[-i] enabled" << std::endl;
             break;
             case 'R':
                 optionCount++;
                 optionIsRecursive = true;
-                 std::cout << "R enabled" << std::endl;
+                 std::cout << "[-R] enabled" << std::endl;
             break;
             default: 
                 std::cout << "Something is extremly wrong!" << std::endl;
@@ -131,7 +131,6 @@ int main(int argc, char* argv[])
                 // start find for i search term
                 findFileInDir(searchPath,searchTerm,optionIsCaseInsensitive,optionIsRecursive);
 
-                // kill child process 
                 return EXIT_SUCCESS;
             break;
             default:
@@ -149,8 +148,9 @@ int main(int argc, char* argv[])
     }
 
     // wait for all processes
-    int returnStatus;       
-    waitpid(-1, &returnStatus, 0);
+    for(i = 0; i < (int) searchTerms.size(); i++) 
+        wait(NULL);
+    
 
     return EXIT_SUCCESS;
 }
